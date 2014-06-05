@@ -67,9 +67,6 @@ public class ImgUtil {
 		return out;
 	}
 
-	// codigo inspirado em:
-	// http://stackoverflow.com/questions/15861314/get-0-255-values-from-databufferbyte-getdata-for-each-color
-
 	static int[] pixTmp = { 0, 0, 0, 0 };
 	
 	public static int[][][] getRGBArray(BufferedImage img, int[][][] arrImg)
@@ -99,168 +96,6 @@ public class ImgUtil {
 		return arrImg;
 	}
 	
-	public static int[][][] getRGBArray__OLD2(BufferedImage img, int[][][] arrImg)
-			throws Exception {
-		int w = img.getWidth();
-		int h = img.getHeight();
-		int pixLen = 0;
-		IMAGES_TYPE tipo = IMAGES_TYPE.getType(img.getType());
-		pixLen = tipo.lenght();
-
-		if (arrImg == null)
-			arrImg = new int[w][h][3];
-		else if (arrImg.length < w || arrImg[0] == null || arrImg[0].length < h
-				|| arrImg[0][0] == null)
-			throw new Exception("erros nos tamanhos da imagem e do array...");
-
-		Raster rIn = img.getData();
-		DataBuffer db = rIn.getDataBuffer();
-
-/*		switch( db.getDataType() ) {
-		case DataBuffer.TYPE_BYTE:
-			umArray = ((DataBufferByte) db ).getData();
-//			byte[] dadosImg = 
-			break;
-		case DataBuffer.TYPE_INT:
-			umArray = ( (DataBufferInt) db ).getData();
-//			int[] dadosImg = 
-			break;
-		case DataBuffer.TYPE_SHORT:
-			umArray = ( (DataBufferShort) db ).getData();
-			break;
-		default:
-			throw new Exception( "Qual tipo de imagem vc está querendo abrir??" );
-		} */
-
-		
-		int[] oPix;
-		int rgbCount = 0;
-		// alpha??, blue, green, red
-		for (int i = 0, y = 0, x = 0; i < db.getSize(); i += pixLen) {
-		//for (int i = 0, y = 0, x = 0; i < dadosImg.length; i += pixLen) {
-			oPix = arrImg[x][y];
-			// canalCor ===>>> o indice zero eh o alpha
-			int canalCor = (pixLen > 3) ? 1 : 0; // caso o pixLen > 3 quer dizer
-													// que tem q pular o
-													// alpha...
-			rgbCount=0;
-			for (; canalCor < pixLen; canalCor++) {
-				oPix[rgbCount++] = (int) db.getElem( i + canalCor );
-				//oPix[rgbCount++] = (int) db.getElem( i + canalCor ) & 0xFF;
-				//oPix[3 - canalCor] = (int) dadosImg[i + canalCor] & 0xFF;
-			}
-			x = (x + 1) % w; // o x tem a largura de width
-			if (x == 0) // qdo o x retorna a zero, tem q aumentar a linha
-				y++;
-		}
-		return arrImg;
-	}
-
-	// codigo inspirado em:
-	// http://stackoverflow.com/questions/15861314/get-0-255-values-from-databufferbyte-getdata-for-each-color
-	public static int[][][] getRGBArray__OLD(BufferedImage img, int[][][] arrImg)
-			throws Exception {
-		int w = img.getWidth();
-		int h = img.getHeight();
-		int pixLen = 0;
-		IMAGES_TYPE tipo = IMAGES_TYPE.getType(img.getType());
-		pixLen = tipo.lenght();
-
-		if (arrImg == null)
-			arrImg = new int[w][h][3];
-		else if (arrImg.length < w || arrImg[0] == null || arrImg[0].length < h
-				|| arrImg[0][0] == null)
-			throw new Exception("erros nos tamanhos da imagem e do array...");
-
-		Raster rIn = img.getData();
-		DataBuffer db = rIn.getDataBuffer();
-		byte[] dadosImg = ( (DataBufferByte) db ).getData();
-
-		int[] oPix;
-		// alpha??, blue, green, red
-		for (int i = 0, y = 0, x = 0; i < dadosImg.length; i += pixLen) {
-			oPix = arrImg[x][y];
-			// canalCor ===>>> o indice zero eh o alpha
-			int canalCor = (pixLen > 3) ? 1 : 0; // caso o pixLen > 3 quer dizer
-													// que tem q pular o
-													// alpha...
-			for (; canalCor < pixLen; canalCor++) {
-				oPix[3 - canalCor] = (int) dadosImg[i + canalCor] & 0xFF;
-			}
-			x = (x + 1) % w; // o x tem a largura de width
-			if (x == 0) // qdo o x retorna a zero, tem q aumentar a linha
-				y++;
-		}
-		return arrImg;
-	}
-	
-	
-	public static int[][] get2DArray(BufferedImage img, int[][] arrImg) {
-		int w = img.getWidth();
-		int h = img.getHeight();
-		if (arrImg == null)
-			arrImg = new int[w][h];
-
-		Raster rIn = img.getData();
-		byte[] dadosImg = ((DataBufferByte) rIn.getDataBuffer()).getData();
-		int yOffset = 0;
-		for (int y = 0; y < h; y++) {
-			yOffset = y * w;
-			for (int x = 0; x < w; x++) {
-				int valor = dadosImg[x + yOffset];
-				if (valor < 0)
-					valor += 256;
-				arrImg[x][y] = valor;
-			}
-		}
-
-		return arrImg;
-	}
-
-	private static int[][] convertTo2DWithoutUsingGetRGB(BufferedImage image) {
-
-		final byte[] pixels = ((DataBufferByte) image.getRaster()
-				.getDataBuffer()).getData();
-		final int width = image.getWidth();
-		final int height = image.getHeight();
-		final boolean hasAlphaChannel = image.getAlphaRaster() != null;
-
-		int[][] result = new int[height][width];
-		if (hasAlphaChannel) {
-			final int pixelLength = 4;
-			for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
-				int argb = 0;
-				argb += (((int) pixels[pixel] & 0xff) << 24); // alpha
-				argb += ((int) pixels[pixel + 1] & 0xff); // blue
-				argb += (((int) pixels[pixel + 2] & 0xff) << 8); // green
-				argb += (((int) pixels[pixel + 3] & 0xff) << 16); // red
-				result[row][col] = argb;
-				col++;
-				if (col == width) {
-					col = 0;
-					row++;
-				}
-			}
-		} else {
-			final int pixelLength = 3;
-			for (int pixel = 0, row = 0, col = 0; pixel < pixels.length; pixel += pixelLength) {
-				int argb = 0;
-				argb += -16777216; // 255 alpha
-				argb += ((int) pixels[pixel] & 0xff); // blue
-				argb += (((int) pixels[pixel + 1] & 0xff) << 8); // green
-				argb += (((int) pixels[pixel + 2] & 0xff) << 16); // red
-				result[row][col] = argb;
-				col++;
-				if (col == width) {
-					col = 0;
-					row++;
-				}
-			}
-		}
-
-		return result;
-	}
-
 	public static BufferedImage rgb2gray(BufferedImage image) {
 		if (image.getType() == BufferedImage.TYPE_BYTE_GRAY)
 			return image;
@@ -291,9 +126,6 @@ public class ImgUtil {
 				pix = rImg.getPixel(x, y, pix);
 				cinza = ConversorCores.rgb2gray(pix);
 				pixCinza[0] = (int) cinza;
-				// pix[0] = pix[1] = pix[2] = (int) cinza;
-				// pix[3] = 255;
-				// rOut.setPixel(x, y, pix);
 				rOut.setPixel(x, y, pixCinza);
 			}
 		}
