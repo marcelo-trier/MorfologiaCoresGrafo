@@ -4,75 +4,57 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Grafo {
-	Vertice[] vertices;
-	ArrayList<Aresta> arestas = new ArrayList<Aresta>();
+	List<Vertice> vertices = new ArrayList<Vertice>();
+	List<Aresta> arestas = new ArrayList<Aresta>();
 
 	public String toString() {
-		String msg = "GRAFO = { V, E }, show down:\n";
-		msg += "V = { ";
-		for (Vertice v : vertices) {
-			msg += v.label + ", ";
-		}
-		msg = msg.substring(0, msg.length() - 2);
-		msg += " };\n";
-		msg += "E = { ";
-		for (Aresta a : arestas) {
-			Vertice u = a.vi[0], v = a.vi[1];
-			msg += "(" + u.label + " -> " + v.label + "), ";
-		}
-		msg = msg.substring(0, msg.length() - 2);
-		msg += " }\n";
+		String msg = "Pring: G = { V, E }::\n";
+		msg += "V = " + vertices + "\n";
+		msg += "E = " + arestas + "\n";
 		return msg;
 	}
 
-	public Vertice[] getVertices() {
+	public List<Vertice> getVertices() {
 		return vertices;
 	}
 
 	public void transpose() {
 		Vertice tmp;
 		for (Aresta a : arestas) {
-			tmp = a.vi[0];
-			a.vi[0] = a.vi[1];
-			a.vi[1] = tmp;
+			tmp = a.from;
+			a.from = a.to;
+			a.to = tmp;
 		}
 	}
 
-	public ArrayList<Aresta> getArestas() {
+	public List<Aresta> getArestas() {
 		return arestas;
 	}
 
 	public Grafo() {
 	}
 
-	public Grafo(ArrayList<Aresta> la, Vertice[] v) {
-		arestas = (ArrayList<Aresta>) la.clone();
-		if (v != null)
-			initVertices(v);
-		else {
-			// TODO: ???? o q fazer se ( v == null ) ??
-		}
+	public Grafo(Aresta[] la, Vertice[] lv) {
+		this(Arrays.asList(la), Arrays.asList(lv));
 	}
 
-	public void initVertices(Vertice[] v) {
-		if( v == null ) {
-			vertices = null;
+	public Grafo(List la, List lv) {
+		if (la == null || lv == null)
 			return;
-		}
 
-		if (vertices != null && vertices.length == v.length) {
-			System.arraycopy(v, 0, vertices, 0, v.length);
-			return;
-		}
-
-		vertices = v.clone();
+		arestas.clear();
+		vertices.clear();
+		arestas.addAll(la);
+		vertices.addAll(lv);
 	}
 
 	public Aresta getAresta(Vertice v1, Vertice v2, float w) {
 		for (Aresta a : arestas) {
-			if (v1 == a.vi[0] && v2 == a.vi[1] && w == a.weight) {
+			if (v1 == a.from && v2 == a.to && w == a.weight) {
 				return a;
 			}
 		}
@@ -80,24 +62,34 @@ public class Grafo {
 	}
 
 	public void addAresta(Vertice v1, Vertice v2, float w) {
-		if( getAresta( v1, v2, w ) == null ) {
-			arestas.add( new Aresta( v1, v2, w ) );
+		if (getAresta(v1, v2, w) == null) {
+			arestas.add(new Aresta(v1, v2, w));
 		}
 	}
 
-	public void addAresta(Aresta a) {
+	public void addAresta__OLD(Aresta a) {
 		arestas.add(a);
 	}
 
 	public void criaVertices(int len) {
-		vertices = new Vertice[len];
+		// vertices = new VerticeV2[len];
+		vertices.clear();
 		char tmp = 'a';
 		String label;
-		for (int i = 0; i < vertices.length; i++) {
+		for (int i = 0; i < len; i++) {
 			label = "" + tmp++;
-			vertices[i] = new Vertice(i, label);
+			vertices.add(new Vertice(i, label));
 		}
-		initVertices(vertices);
+	}
+
+	public boolean existeAresta__OLD(Vertice v1, Vertice v2, float peso) {
+		for (Aresta a : arestas) {
+			if ((v1 == a.to || v1 == a.from) && (v2 == a.to || v2 == a.from)
+					&& a.weight == peso) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	public void loadFromFile(File f) throws Exception {
@@ -115,18 +107,16 @@ public class Grafo {
 			String[] tokens = linha.split("\\s+"); // pega qualquer coisa:
 													// espaço, tab, quebra de
 													// linha, etc..
-			if (vertices == null) {
+			if (vertices.size() == 0)
 				criaVertices(tokens.length);
-			}
 
 			for (int numeroColuna = 0; numeroColuna < tokens.length; numeroColuna++) {
-				int tmp = Integer.parseInt(tokens[numeroColuna]);
-				if (tmp != -1) {
+				int peso = Integer.parseInt(tokens[numeroColuna]);
+				if (peso != -1) {
 					Vertice v1, v2;
-					v1 = vertices[numeroLinha];
-					v2 = vertices[numeroColuna];
-					Aresta a = new Aresta(v1, v2, tmp);
-					addAresta(a);
+					v1 = vertices.get(numeroLinha);
+					v2 = vertices.get(numeroColuna);
+					addAresta( v1, v2, peso );
 				}
 			}
 		}

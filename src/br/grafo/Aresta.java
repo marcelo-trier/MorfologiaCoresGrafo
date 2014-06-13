@@ -1,16 +1,26 @@
 package br.grafo;
 
 public class Aresta implements Comparable<Aresta> {
-	public Vertice vi[] = { null, null }; // somente um indice para o vetor de vertice
+	//public VerticeV2 vi[] = { null, null }; // somente um indice para o vetor de vertice
+	public Vertice from;
+	public Vertice to;
 	public float weight; // peso
+	
+	public String toString() {
+		String msg;
+		msg = "[" + from + "--" + to + "]";
+		return msg;
+	}
 	
 	public Aresta( Vertice v1, Vertice v2, float w ) {
 		setInfo( v1, v2, w );
 	}
 
-	public void setInfo( Vertice v1, Vertice v2, float w ) {
-		vi[0] = v1;
-		vi[1] = v2;
+	public void setInfo( Vertice src, Vertice dst, float w ) {
+//		vi[0] = v1;
+//		vi[1] = v2;
+		from = src;
+		to = dst;
 		weight = w;
 	}
 	
