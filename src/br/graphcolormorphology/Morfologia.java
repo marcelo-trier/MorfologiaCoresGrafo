@@ -55,6 +55,7 @@ public class Morfologia {
 		// o tamanho dos pixels vizinhos eh igual ao tamanho estruturante... 
 		EE = new int[ ElementoEstruturante.offset.length ][ 3 ]; // rgb
 		gMst = new GrafoMST( EE );
+		// TODO: aqui vai substituir o GrafoMST pelo grafo generico
 
 		//ArrayUtils.fillOutBoard( arrImg, arrOut );
 	}

@@ -3,7 +3,6 @@ package br.graphcolormorphology.ui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
 
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
@@ -17,7 +16,7 @@ import javax.swing.border.EmptyBorder;
 import br.graphcolormorphology.Morfologia;
 import br.graphcolormorphology.Morfologia.TAREFA;
 import br.graphcolormorphology.ui.JanelaOperacoes.OpMat;
-import br.graphcolormorphology.util.GerenteArquivos;
+import br.graphcolormorphology.util.ImageFile;
 import br.graphcolormorphology.util.ImgUtil;
 
 // vou usar as fotos de: http://fei.edu.br/~cet/facedatabase.html
@@ -25,7 +24,7 @@ import br.graphcolormorphology.util.ImgUtil;
 public class JanelaPrincipal extends JFrame {
 
 	private JDesktopPane contentPane;
-	protected GerenteArquivos fileManager = new GerenteArquivos(this);
+	protected ImageFile fileManager = ImageFile.getInstance();
 	private JanelaOperacoes operacoes = new JanelaOperacoes();
 	
 	public void clickOperacoes() throws Exception {
@@ -88,20 +87,20 @@ public class JanelaPrincipal extends JFrame {
 		img = ti.getImage();
 		return img;
 	}
-
+	
 	public void clickCarregaArquivos() throws Exception {
-		BufferedImage imgs[] = fileManager.carregaImagens();
+		BufferedImage imgs[] = ImageFile.getInstance().carregaImagens();
 
 		for (BufferedImage imagem : imgs)
 			mostraImagem(imagem);
 	}
 
 	public void clickSave() throws Exception {
-		fileManager.save(getImage());
+		ImageFile.getInstance().save(getImage());
 	}
 
 	public void clickLoad() throws Exception {
-		mostraImagem(fileManager.carregaImagem());
+		mostraImagem( ImageFile.getInstance().carregaImagem());
 	}
 
 	public JanelaPrincipal() {

@@ -67,8 +67,8 @@ public class ImgUtil {
 		return out;
 	}
 
-	static int[] pixTmp = { 0, 0, 0, 0 };
 	
+	static int[] pixTmp = { 0, 0, 0, 0 };
 	public static int[][][] getRGBArray(BufferedImage img, int[][][] arrImg)
 			throws Exception {
 		int w = img.getWidth();

@@ -10,83 +10,54 @@ import javax.swing.JFileChooser;
 
 public class GerenteArquivos {
 
-	JFileChooser fc = new JFileChooser();
-	Component parent;
+	public static final GerenteArquivos instance = new GerenteArquivos();
 	
-	public GerenteArquivos( Component umaJanela ) {
-		parent = umaJanela;
+	protected GerenteArquivos() {
 	}
 	
+	JFileChooser fc = new JFileChooser();
+	final File baseDir = new File( System.getProperty( "user.dir" ) );
+	Component parent = null;
+
+	public static GerenteArquivos getInstance() {
+		return instance;
+	}
+
+	public void setParent( Component umComponente ) {
+		parent = umComponente;
+	}
+
 	public File selecionaDiretorio() throws IOException {
-		File umDir = new File(System.getProperty("user.dir"));
-		fc.setCurrentDirectory(umDir);
-		fc.setDialogType(JFileChooser.DIRECTORIES_ONLY);
-		fc.setAcceptAllFileFilterUsed(false);
+		fc.setMultiSelectionEnabled( false );
+		selectFile( JFileChooser.DIRECTORIES_ONLY );
+		return fc.getCurrentDirectory();
+	}
+	
+	public File getOpenFile() throws IOException {
+		return getFile( JFileChooser.OPEN_DIALOG );
+	}
+
+	public File getSaveFile() throws IOException {
+		return getFile( JFileChooser.SAVE_DIALOG );
+	}
+
+	public File getFile( int dialogType ) throws IOException {
+		fc.setMultiSelectionEnabled( false );
+		selectFile( dialogType );
+		return fc.getSelectedFile();
+	}
+	
+	public void selectFile( int dialogType ) throws IOException {
+		fc.setDialogType( dialogType );
+		fc.setCurrentDirectory( baseDir );
 		if ( fc.showSaveDialog( parent ) != JFileChooser.APPROVE_OPTION) {
 			throw new IOException();
 		}
-
-		File dir = fc.getCurrentDirectory();
-		return dir;
-		
 	}
 	
-	public BufferedImage carregaImagem() throws IOException {
-		fc.setDialogType(JFileChooser.OPEN_DIALOG);
-		File umDir = new File(System.getProperty("user.dir"));
-		fc.setCurrentDirectory(umDir);
-		if ( fc.showOpenDialog( parent ) != JFileChooser.APPROVE_OPTION) {
-			throw new IOException();
-		}
-		File file = fc.getSelectedFile();
-		return ImageIO.read(file);
-	}
-
 	public File[] carregaArquivos() throws Exception  {
-
-		fc.setDialogType(JFileChooser.OPEN_DIALOG);
 		fc.setMultiSelectionEnabled(true);
-		File umDir = new File(System.getProperty("user.dir"));
-		fc.setCurrentDirectory(umDir);
-		if (fc.showOpenDialog( parent ) != JFileChooser.APPROVE_OPTION) {
-			throw new IOException();
-		}
+		selectFile( JFileChooser.OPEN_DIALOG );
 		return fc.getSelectedFiles();
-	}
-	
-	public BufferedImage[] carregaImagens() throws Exception {
-		File files[] = carregaArquivos();
-
-		BufferedImage imgs[] = new BufferedImage[ files.length  ];
-		for( int i=0; i<files.length; i++ ) {
-			imgs[i] = ImageIO.read( files[i] );
-		}
-		return imgs;
-	}
-	
-	public void save( BufferedImage img ) throws Exception {
-		File salvar = getSaveFile();
-		ImageIO.write(img, "bmp", salvar);
-	}
-
-	public void save( BufferedImage imgs[] ) throws Exception {
-		File salvar = getSaveFile();
-		ImageIO.write( imgs[0], "bmp", salvar );
-
-		String path = salvar.getAbsolutePath() + "-1.bmp";
-		salvar = new File(path);
-		ImageIO.write( imgs[1], "bmp", salvar );
-	}
-	
-	public File getSaveFile() throws IOException {
-		JFileChooser fileChooser = new JFileChooser();
-		fileChooser.setDialogType(JFileChooser.SAVE_DIALOG);
-		File umDir = new File(System.getProperty("user.dir"));
-		fileChooser.setCurrentDirectory(umDir);
-		if (fileChooser.showSaveDialog( parent ) != JFileChooser.APPROVE_OPTION) {
-			throw new IOException();
-		}
-		return fileChooser.getSelectedFile();
-	}
-	
+	}	
 }
