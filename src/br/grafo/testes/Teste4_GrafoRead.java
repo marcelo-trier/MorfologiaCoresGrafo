@@ -3,7 +3,7 @@ package br.grafo.testes;
 import java.io.File;
 
 import br.grafo.Grafo;
-import br.grafo.MST;
+import br.grafo.mst.MST;
 import br.pereira.util.GerenteArquivos;
 
 public class Teste4_GrafoRead {
@@ -17,6 +17,9 @@ public class Teste4_GrafoRead {
 		MST mst = new MST( g );
 		mst.runKruskal();
 		System.out.println( mst );
-		//mst.removeTroncos();
+		mst.removeTrunks();
+		System.out.println( mst );
+		mst.linkAll();
+		System.out.println( mst );
 	}
 }

@@ -24,6 +24,10 @@ import javax.xml.crypto.Data;
 
 public class ImgUtil {
 
+	public static int[] pixPreto = { 0, 0, 0 };
+	public static int[] pixBrco = { 255, 255, 255 };
+	public static int[] pixVerm = { 255, 0, 0 };
+	
 	public static float getRGBDistance(int[] p1, int[] p2) {
 		int somatorio = 0;
 		for (int i = 0; i < p1.length; i++) {

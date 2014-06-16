@@ -19,7 +19,6 @@ import br.pereira.ui.JanelaOperacoes.OpMat;
 import br.pereira.util.ImageFile;
 import br.pereira.util.ImgUtil;
 
-// vou usar as fotos de: http://fei.edu.br/~cet/facedatabase.html
 
 public class JanelaPrincipal extends JFrame {
 
@@ -204,6 +203,14 @@ public class JanelaPrincipal extends JFrame {
 			}
 		});
 		mnProcessamento.add(mntmDilatao);
+		
+		JMenuItem mntmErosaoGrafo = new JMenuItem("Erosao Grafo");
+		mntmErosaoGrafo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				clickTask( TAREFA.EROSAO_GRAFO_MST );
+			}
+		});
+		mnProcessamento.add(mntmErosaoGrafo);
 		contentPane = new JDesktopPane();
 		contentPane.setDragMode(JDesktopPane.LIVE_DRAG_MODE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

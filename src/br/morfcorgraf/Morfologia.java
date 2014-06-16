@@ -3,10 +3,10 @@ package br.morfcorgraf;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
-import br.graph.GrafoMST;
+import br.grafo.GrafoEstatico;
+import br.grafo.mst.MST;
 import br.pereira.util.ArrayUtils;
 import br.pereira.util.ImgUtil;
-import br.pereira.util.ImgUtil.IMAGES_TYPE;
 
 public class Morfologia {
 
@@ -26,38 +26,34 @@ public class Morfologia {
 	int[][][] arrTmp;
 	int[][] EE;
 	TAREFA umaTarefa = TAREFA.EROSAO;
-	GrafoMST gMst;
+	MST gMst;
+//	GrafoMST gMst;
 	
 	public Morfologia( BufferedImage img ) throws Exception {
 		loadImage( img );
+
+		// o tamanho dos pixels vizinhos eh igual ao tamanho estruturante... 
+		EE = new int[ ElementoEstruturante.offset.length ][ 3 ]; // rgb
+		GrafoEstatico.setData( EE ); // aqui faz a ligacao dos vertices com o ElemEstrut
+		gMst = new MST( GrafoEstatico.newGrafo() );
+		
+		// TODO: aqui vai preencher as bordas??
+		//ArrayUtils.fillOutBoard( arrImg, arrOut );
 	}
 
 	public void setTask( TAREFA t ) {
 		umaTarefa = t;
 	}
-	
+
 	private void loadImage( BufferedImage img ) throws Exception {
 		imgOrig = img;
 		_w = imgOrig.getWidth();
 		_h = imgOrig.getHeight();
-		//int channelLen = 0;
-		//IMAGES_TYPE tipo = IMAGES_TYPE.getType( imgOrig.getType() );
-		//channelLen = tipo.lenght();
-
-		//if( channelLen > 3 )
-		//	channelLen = 3;
 
 		arrImg = new int[ _w ][ _h ][ 3 ]; // rgb
 		arrTmp = new int[ _w ][ _h ][ 3 ];
 
 		arrImg = ImgUtil.getRGBArray( imgOrig, arrImg );
-
-		// o tamanho dos pixels vizinhos eh igual ao tamanho estruturante... 
-		EE = new int[ ElementoEstruturante.offset.length ][ 3 ]; // rgb
-		gMst = new GrafoMST( EE );
-		// TODO: aqui vai substituir o GrafoMST pelo grafo generico
-
-		//ArrayUtils.fillOutBoard( arrImg, arrOut );
 	}
 	
 	public void execute( int interacoes ) throws Exception {
@@ -66,9 +62,9 @@ public class Morfologia {
 		}
 	}
 
-	public static int[][] getElemEstrut( int[][][] imgArr, int x, int y, int[][] buffOut ) {
+	public static int[][] getElemEstrut( int[][][] imgArr, int x, int y, int[][] buffOut ) throws Exception {
 		if( buffOut == null ) {
-			buffOut = new int[ ElementoEstruturante.offset.length ][ imgArr[0][0].length ];
+			throw new Exception( "Elemento Estruturante nao criado..." );
 		}
 		
 		for( int ee=0; ee<ElementoEstruturante.offset.length; ee++ ) { // para cada item do elemento estruturante
@@ -96,7 +92,7 @@ public class Morfologia {
 					arrTmp[ x ][ y ] = ArrayUtils.getMaxRGB( EE, arrTmp[ x ][ y ] );
 					break;
 				case EROSAO_GRAFO_MST:
-//					arrTmp[ x ][ y ] = gMst.getMinRGB( EE, arrTmp[ x ][ y ] );
+					arrTmp[ x ][ y ] = gMst.getMinRGB( EE, arrTmp[ x ][ y ] );
 					break;
 				case DILATACAO_GRAFO_MST:
 					break;

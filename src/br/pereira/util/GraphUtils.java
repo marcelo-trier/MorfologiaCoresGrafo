@@ -6,14 +6,15 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-import br.graph.Aresta;
-import br.graph.Grafo;
+import br.grafo.Aresta;
+import br.grafo.Grafo;
 
 
 public class GraphUtils {
 // VERIFICAR:
 // https://code.google.com/p/flexigraph/source/browse/trunk/src/gr/forth/ics/graph/io/gml/GmlReader.java?r=4
 
+	/*
 	public static Grafo<Integer> readGraphAdjacency( File f ) throws Exception {
 		FileReader fr = new FileReader( f );
 		BufferedReader br = new BufferedReader( fr );
@@ -76,5 +77,5 @@ public class GraphUtils {
 		}
 		salvar.write("]\n");
 		salvar.close();
-	}
+	} */
 }

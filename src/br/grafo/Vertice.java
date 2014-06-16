@@ -4,6 +4,7 @@ public class Vertice<T> {
 	int id = 0;
 	String label = "";
 	T umDado;
+	public int numLigacoes = 0;
 	
 	public Vertice( int i, String l ) {
 		id = i;
@@ -12,6 +13,10 @@ public class Vertice<T> {
 	
 	public void setData( T dado ) {
 		umDado = dado;
+	}
+	
+	public T getData() {
+		return umDado;
 	}
 	
 	public String toString() {

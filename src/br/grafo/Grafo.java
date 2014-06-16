@@ -8,18 +8,22 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Grafo {
-	List<Vertice> vertices = new ArrayList<Vertice>();
-	List<Aresta> arestas = new ArrayList<Aresta>();
+	protected List<Vertice> vertices = new ArrayList<Vertice>();
+	protected List<Aresta> arestas = new ArrayList<Aresta>();
 
 	public String toString() {
-		String msg = "Pring: G = { V, E }::\n";
-		msg += "V = " + vertices + "\n";
-		msg += "E = " + arestas + "\n";
+		String msg = "Printing G = { V, E }::\n";
+		msg += "V["+ vertices.size() + "] = " + vertices + "\n";
+		msg += "E["+ arestas.size() + "] = " + arestas + "\n";
 		return msg;
 	}
 
 	public List<Vertice> getVertices() {
 		return vertices;
+	}
+
+	public List<Aresta> getArestas() {
+		return arestas;
 	}
 
 	public void transpose() {
@@ -29,10 +33,6 @@ public class Grafo {
 			a.from = a.to;
 			a.to = tmp;
 		}
-	}
-
-	public List<Aresta> getArestas() {
-		return arestas;
 	}
 
 	public Grafo() {
@@ -54,7 +54,8 @@ public class Grafo {
 
 	public Aresta getAresta(Vertice v1, Vertice v2, float w) {
 		for (Aresta a : arestas) {
-			if (v1 == a.from && v2 == a.to && w == a.weight) {
+			if ((v1 == a.to || v1 == a.from) && (v2 == a.to || v2 == a.from)
+					&& a.weight == w ) {
 				return a;
 			}
 		}
@@ -67,10 +68,6 @@ public class Grafo {
 		}
 	}
 
-	public void addAresta__OLD(Aresta a) {
-		arestas.add(a);
-	}
-
 	public void criaVertices(int len) {
 		// vertices = new VerticeV2[len];
 		vertices.clear();
@@ -80,16 +77,6 @@ public class Grafo {
 			label = "" + tmp++;
 			vertices.add(new Vertice(i, label));
 		}
-	}
-
-	public boolean existeAresta__OLD(Vertice v1, Vertice v2, float peso) {
-		for (Aresta a : arestas) {
-			if ((v1 == a.to || v1 == a.from) && (v2 == a.to || v2 == a.from)
-					&& a.weight == peso) {
-				return true;
-			}
-		}
-		return false;
 	}
 
 	public void loadFromFile(File f) throws Exception {

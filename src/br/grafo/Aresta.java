@@ -16,12 +16,13 @@ public class Aresta implements Comparable<Aresta> {
 		setInfo( v1, v2, w );
 	}
 
-	public void setInfo( Vertice src, Vertice dst, float w ) {
+	public Aresta setInfo( Vertice src, Vertice dst, float w ) {
 //		vi[0] = v1;
 //		vi[1] = v2;
 		from = src;
 		to = dst;
 		weight = w;
+		return this;
 	}
 	
 	public int compareTo(Aresta o) {
