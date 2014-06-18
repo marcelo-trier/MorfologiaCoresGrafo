@@ -20,10 +20,10 @@ public class JanelaOperacoes extends JDialog {
 	JComboBox<TelaInterna> cbxEscolha2;
 	boolean ok = false;
 
-	OpMat opEscolhida = OpMat.SUBTRACAO;
+	OpMat opEscolhida = OpMat.SUB;
 	
 	public enum OpMat {
-		SUBTRACAO, SOMA
+		SUB, SOMA
 	}
 	
 	public boolean isOk() {
@@ -46,6 +46,8 @@ public class JanelaOperacoes extends JDialog {
 			cbm1.addElement( ti );
 			cbm2.addElement( ti );
 		}
+		cbm1.setSelectedItem( opcoes[0] );
+		cbm2.setSelectedItem( opcoes[1] );
 	}
 	
 	public JanelaOperacoes() {
@@ -55,15 +57,15 @@ public class JanelaOperacoes extends JDialog {
 				onShow();
 			}
 		});
-		setBounds(100, 100, 450, 225);
+		setBounds(100, 100, 450, 339);
 		getContentPane().setLayout(null);
 		
 		cbxEscolha1 = new JComboBox<TelaInterna>();
-		cbxEscolha1.setBounds(12, 12, 188, 33);
+		cbxEscolha1.setBounds(12, 12, 350, 33);
 		getContentPane().add(cbxEscolha1);
 		
 		cbxEscolha2 = new JComboBox<TelaInterna>();
-		cbxEscolha2.setBounds(238, 12, 188, 33);
+		cbxEscolha2.setBounds(12, 50, 350, 33);
 		getContentPane().add(cbxEscolha2);
 		
 		JButton btnOk = new JButton("OK");
@@ -73,7 +75,7 @@ public class JanelaOperacoes extends JDialog {
 				setVisible( false );
 			}
 		});
-		btnOk.setBounds(12, 125, 188, 42);
+		btnOk.setBounds(12, 250, 188, 42);
 		getContentPane().add(btnOk);
 		
 		JButton btnCancel = new JButton("Cancel");
@@ -83,18 +85,18 @@ public class JanelaOperacoes extends JDialog {
 				setVisible( false );
 			}
 		});
-		btnCancel.setBounds(238, 125, 188, 42);
+		btnCancel.setBounds(238, 250, 188, 42);
 		getContentPane().add(btnCancel);
 		
 		JRadioButton rdbtnSubtrao = new JRadioButton("Subtração");
 		rdbtnSubtrao.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				opEscolhida = OpMat.SUBTRACAO;
+				opEscolhida = OpMat.SUB;
 			}
 		});
 		rdbtnSubtrao.setSelected(true);
 		buttonGroup.add(rdbtnSubtrao);
-		rdbtnSubtrao.setBounds(12, 59, 104, 23);
+		rdbtnSubtrao.setBounds(12, 200, 104, 23);
 		getContentPane().add(rdbtnSubtrao);
 		
 		JRadioButton rdbtnSoma = new JRadioButton("Soma");
@@ -104,7 +106,7 @@ public class JanelaOperacoes extends JDialog {
 			}
 		});
 		buttonGroup.add(rdbtnSoma);
-		rdbtnSoma.setBounds(120, 59, 149, 23);
+		rdbtnSoma.setBounds(120, 200, 149, 23);
 		getContentPane().add(rdbtnSoma);
 		
 	}

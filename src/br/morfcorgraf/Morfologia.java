@@ -1,5 +1,6 @@
 package br.morfcorgraf;
 
+import java.awt.Color;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 
@@ -10,14 +11,25 @@ import br.pereira.util.ImgUtil;
 
 public class Morfologia {
 
+	public enum RefColor {
+		BLACK, WHITE, BLUE, YELLOW, RED
+	}
+	
 	public enum TAREFA {
-		EROSAO, 
-		DILATACAO,
-		EROSAO_GRAFO_MST,
-		DILATACAO_GRAFO_MST,
+		E_LEX, 
+		D_LEX,
+		E_GRAPH,
+		D_GRAPH,
 		SUBTRACAO,
 		SOMA,
 		SAVE_BUFF_ORIGINAL, // retorna o resultado do arrTmp --> para o --> arrOrig
+	}
+	
+	int[] colorReference = { 0, 0, 0 };
+	public void setColorReference( Color umaCor ) {
+		colorReference[0] = umaCor.getRed();
+		colorReference[1] = umaCor.getGreen();
+		colorReference[2] = umaCor.getBlue();
 	}
 	
 	BufferedImage imgOrig;
@@ -25,7 +37,7 @@ public class Morfologia {
 	int[][][] arrImg;
 	int[][][] arrTmp;
 	int[][] EE;
-	TAREFA umaTarefa = TAREFA.EROSAO;
+	TAREFA umaTarefa = TAREFA.E_LEX;
 	MST gMst;
 //	GrafoMST gMst;
 	
@@ -85,16 +97,16 @@ public class Morfologia {
 			for( int x=1; x<_w-1; x++ ) {
 				EE = getElemEstrut( arrImg, x, y, EE );
 				switch( umaTarefa ) {
-				case EROSAO:
+				case E_LEX:
 					arrTmp[ x ][ y ] = ArrayUtils.getMinRGB( EE, arrTmp[ x ][ y ] );
 					break;
-				case DILATACAO:
+				case D_LEX:
 					arrTmp[ x ][ y ] = ArrayUtils.getMaxRGB( EE, arrTmp[ x ][ y ] );
 					break;
-				case EROSAO_GRAFO_MST:
-					arrTmp[ x ][ y ] = gMst.getMinRGB( EE, arrTmp[ x ][ y ] );
-					break;
-				case DILATACAO_GRAFO_MST:
+				case E_GRAPH:
+				case D_GRAPH:
+//					arrTmp[ x ][ y ] = getMinRGB_Mst( EE, arrTmp[ x ][ y ] );
+					arrTmp[ x ][ y ] = getRGB_MST( EE, arrTmp[ x ][ y ], umaTarefa );
 					break;
 				default:
 					throw new Exception( "escolha erradaaa!!!" );
@@ -102,13 +114,69 @@ public class Morfologia {
 			}
 		}
 
+		int[][][] aux = arrTmp;
+		arrTmp = arrImg;
+		arrImg = aux;
+
+/*		
 		for( int y=1; y<_h-1; y++ ) {
 			for( int x=1; x<_w-1; x++ ) {
 				for( int cor=0; cor<3; cor++ ) {
 					arrImg[x][y][cor] = arrTmp[x][y][cor];
 				}
 			}
+		} */
+	}
+
+	
+	public int[] getRGB_MST( int[][] elEstr, int oResult[], TAREFA umaT ) throws Exception {
+		// no inicio jah foi feito a atualizacao dos ponteiros para o EE
+		do {
+			gMst.runKruskal();
+		} while( gMst.removeTrunks() > 2 );
+
+
+		int[] rgb1 = ( int[] )gMst.getVertices().get( 0 ).getData();
+		int[] rgb2 = ( int[] )gMst.getVertices().get( 1 ).getData();
+		float d1 = ImgUtil.getRGBDistance( rgb1, colorReference );
+		float d2 = ImgUtil.getRGBDistance( rgb2, colorReference );
+		
+		int[] res = rgb1;
+
+		// pega quem for menor...
+		if( umaT == TAREFA.E_GRAPH && d1 > d2 ) {
+			res = rgb2;
 		}
+		
+		// pega quem for maior...
+		if( umaT == TAREFA.D_GRAPH && d1 < d2 ) {
+			res = rgb2;
+		}
+		
+		System.arraycopy(res, 0, oResult, 0, res.length );
+		return oResult;
+	}
+	
+	public int[] getMinRGB_Mst__OOOLLDDDD( int[][] elEstr, int oResult[] ) throws Exception {
+		// no inicio jah foi feito a atualizacao dos ponteiros para o EE
+		do {
+			gMst.runKruskal();
+		} while( gMst.removeTrunks() > 2 );
+
+
+		int[] rgb1 = ( int[] )gMst.getVertices().get( 0 ).getData();
+		int[] rgb2 = ( int[] )gMst.getVertices().get( 1 ).getData();
+		float d1 = ImgUtil.getRGBDistance( rgb1, colorReference );
+		float d2 = ImgUtil.getRGBDistance( rgb2, colorReference );
+		
+		int[] res = rgb1;
+		// o delta mais próximo da cor de referência é o menor...
+		if( d1 > d2 ) {
+			res = rgb2;
+		}
+		
+		System.arraycopy(res, 0, oResult, 0, res.length );
+		return oResult;
 	}
 	
 	public BufferedImage getImage() throws IOException {

@@ -48,7 +48,7 @@ public class TelaInterna extends JInternalFrame {
 	}
 
 	public void initTela( String titulo, BufferedImage img ) {
-		String oTitulo = "[JanelaId: " + contadorJanela + "] :: ";
+		String oTitulo = "[Id: " + contadorJanela + "] :: ";
 		oTitulo += titulo;
 		this.setTitle( oTitulo );
 		id = contadorJanela;

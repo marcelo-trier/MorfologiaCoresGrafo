@@ -13,7 +13,6 @@ public class ArrayUtils {
 					continue;
 				if( arr[i][cor] < result[ cor ] )
 					result = arr[ i ];
-				break;
 			}
 		}
 		for( int i=0; i<oResult.length; i++ ) {
@@ -33,7 +32,6 @@ public class ArrayUtils {
 					continue;
 				if( arr[i][cor] > result[ cor ] )
 					result = arr[ i ];
-				break;
 			}
 		}
 		for( int i=0; i<oResult.length; i++ ) {

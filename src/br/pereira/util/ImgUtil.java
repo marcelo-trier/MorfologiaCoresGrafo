@@ -71,10 +71,51 @@ public class ImgUtil {
 		return out;
 	}
 
+
+/*
+         BufferedImage tempimg = ImageIO.read(new File("/home/a/Pictures/Tux-vegeta.png"));
+         img = new BufferedImage(300, 300, BufferedImage.TYPE_INT_ARGB);
+         Graphics2D g2 = img.createGraphics();
+         g2.drawImage(tempimg,null,0,0);
+
+*/	
 	
 	static int[] pixTmp = { 0, 0, 0, 0 };
+	public static int[][][] getRGBArray__TENTATIVA(BufferedImage loadImg, int[][][] arrImg)
+			throws Exception {
+
+        int w = loadImg.getWidth();
+		int h = loadImg.getHeight();
+		int pixLen = 0;
+		IMAGES_TYPE tipo = IMAGES_TYPE.getType( loadImg.getType());
+		pixLen = tipo.lenght();
+		
+		BufferedImage img = new BufferedImage( w, h, BufferedImage.TYPE_INT_RGB );
+		Graphics2D g2 = img.createGraphics();
+		g2.drawImage( loadImg, null, 0, 0 );
+
+		if (arrImg == null)
+			arrImg = new int[w][h][3];
+		else if (arrImg.length < w || arrImg[0] == null || arrImg[0].length < h
+				|| arrImg[0][0] == null)
+			throw new Exception("erros nos tamanhos da imagem e do array...");
+
+		Raster rIn = img.getData();
+		//DataBuffer db = rIn.getDataBuffer();
+
+		pixLen = ( pixLen > 3 ) ? 3 : pixLen;
+		for( int y=0; y<h; y++ ){
+			for( int x=0; x<w; x++ ) {
+				pixTmp = rIn.getPixel( x, y, pixTmp );
+				System.arraycopy( pixTmp, 0, arrImg[x][y], 0, pixLen );
+			}
+		}
+		return arrImg;
+	}
+
 	public static int[][][] getRGBArray(BufferedImage img, int[][][] arrImg)
 			throws Exception {
+
 		int w = img.getWidth();
 		int h = img.getHeight();
 		int pixLen = 0;
@@ -99,7 +140,7 @@ public class ImgUtil {
 		}
 		return arrImg;
 	}
-	
+
 	public static BufferedImage rgb2gray(BufferedImage image) {
 		if (image.getType() == BufferedImage.TYPE_BYTE_GRAY)
 			return image;
@@ -148,19 +189,12 @@ public class ImgUtil {
 		int w2 = img2.getWidth();
 		int h2 = img2.getHeight();
 
-		int dW = w1 - w2;
-		int dH = h1 - h2;
-
+		// significa que as imagens sao diferentesss..
 		if (w1 != w2 || h1 != h2) {
-			// sao diferentes os delta... significa que as imagens sao
-			// diferentesss..
 			throw new Exception("imagens de tamanhos diferentes! Verificar!");
 		}
 
-		// int maxW = (w1 > w2) ? w1 : w2;
-		// int maxH = (h1 > h2) ? h1 : h2;
-
-		out = new BufferedImage(w1, h1, BufferedImage.TYPE_BYTE_GRAY);
+		out = new BufferedImage(w1, h1, BufferedImage.TYPE_INT_RGB );
 		WritableRaster rOut = out.getRaster();
 		int pix[] = { 0, 0, 0, 255 };
 		int pix1[] = { 0, 0, 0, 255 };
@@ -211,27 +245,29 @@ public class ImgUtil {
 	}
 
 	public enum IMAGES_TYPE {
-		TYPE_3BYTE_BGR(BufferedImage.TYPE_3BYTE_BGR, 3), TYPE_4BYTE_ABGR(
-				BufferedImage.TYPE_4BYTE_ABGR, 4), TYPE_4BYTE_ABGR_PRE(
-				BufferedImage.TYPE_4BYTE_ABGR_PRE, 4), TYPE_BYTE_BINARY(
-				BufferedImage.TYPE_BYTE_BINARY, 1), TYPE_BYTE_GRAY(
-				BufferedImage.TYPE_BYTE_GRAY, 1), TYPE_BYTE_INDEXED(
-				BufferedImage.TYPE_BYTE_INDEXED, 1), TYPE_CUSTOM(
-				BufferedImage.TYPE_CUSTOM, 4), TYPE_INT_ARGB(
-				BufferedImage.TYPE_INT_ARGB, 4), TYPE_INT_ARGB_PRE(
-				BufferedImage.TYPE_INT_ARGB_PRE, 4), TYPE_INT_BGR(
-				BufferedImage.TYPE_INT_BGR, 3), TYPE_INT_RGB(
-				BufferedImage.TYPE_INT_RGB, 3), TYPE_USHORT_555_RGB(
-				BufferedImage.TYPE_USHORT_555_RGB, 3), TYPE_USHORT_565_RGB(
-				BufferedImage.TYPE_USHORT_565_RGB, 3), TYPE_USHORT_GRAY(
-				BufferedImage.TYPE_USHORT_GRAY, 3);
+		TYPE_3BYTE_BGR( 	BufferedImage.TYPE_3BYTE_BGR, 3, 0), 
+		TYPE_4BYTE_ABGR( 	BufferedImage.TYPE_4BYTE_ABGR, 4, 1), 
+		TYPE_4BYTE_ABGR_PRE(BufferedImage.TYPE_4BYTE_ABGR_PRE, 4, 1), 
+		TYPE_BYTE_BINARY(	BufferedImage.TYPE_BYTE_BINARY, 1, 0), 
+		TYPE_BYTE_GRAY( 	BufferedImage.TYPE_BYTE_GRAY, 1, 0), 
+		TYPE_BYTE_INDEXED(	BufferedImage.TYPE_BYTE_INDEXED, 1, 0), 
+		TYPE_CUSTOM(		BufferedImage.TYPE_CUSTOM, 4, 0), 
+		TYPE_INT_ARGB(		BufferedImage.TYPE_INT_ARGB, 4, 0), 
+		TYPE_INT_ARGB_PRE(	BufferedImage.TYPE_INT_ARGB_PRE, 4, 0), 
+		TYPE_INT_BGR(		BufferedImage.TYPE_INT_BGR, 3, 0), 
+		TYPE_INT_RGB(		BufferedImage.TYPE_INT_RGB, 3, 0), 
+		TYPE_USHORT_555_RGB(BufferedImage.TYPE_USHORT_555_RGB, 3, 0), 
+		TYPE_USHORT_565_RGB(BufferedImage.TYPE_USHORT_565_RGB, 3, 0), 
+		TYPE_USHORT_GRAY(	BufferedImage.TYPE_USHORT_GRAY, 3, 0);
 
 		int valor;
 		int len;
+		int initOffset;
 
-		IMAGES_TYPE(int v, int l) {
+		IMAGES_TYPE(int v, int l, int offset ) {
 			valor = v;
 			len = l;
+			initOffset = offset;
 		}
 
 		public static IMAGES_TYPE getType(int v) {

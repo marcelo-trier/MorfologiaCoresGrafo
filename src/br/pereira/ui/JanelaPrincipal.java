@@ -1,9 +1,12 @@
 package br.pereira.ui;
 
+import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 
+import javax.imageio.ImageIO;
 import javax.swing.JDesktopPane;
 import javax.swing.JFrame;
 import javax.swing.JInternalFrame;
@@ -38,13 +41,16 @@ public class JanelaPrincipal extends JFrame {
 		TelaInterna t1, t2;
 		t1 = ( TelaInterna )operacoes.cbxEscolha1.getSelectedItem();
 		t2 = ( TelaInterna )operacoes.cbxEscolha2.getSelectedItem();
-		if( operacoes.opEscolhida == OpMat.SUBTRACAO ) {
-			ImgUtil.subtrai( t1.getImage(), t2.getImage() );
+		BufferedImage bi = null;
+		if( operacoes.opEscolhida == OpMat.SUB ) {
+			bi = ImgUtil.subtrai( t1.getImage(), t2.getImage() );
 		}
 		else {
 			// TODO
 		}
-			
+		String tit = operacoes.opEscolhida.toString();
+		tit += ": [" + t1.id + " -> " + t2.id + "]";
+		this.mostraImagem( tit , bi );
 	}
 	
 	public void clickTipoImagem() {
@@ -59,11 +65,14 @@ public class JanelaPrincipal extends JFrame {
 	}
 
 	public void clickTask( TAREFA t ) {
+		TelaInterna ti = (TelaInterna) contentPane.getSelectedFrame();
 		try {
-			Morfologia m = new Morfologia(getImage());
+			Morfologia m = new Morfologia( ti.getImage() );
 			m.setTask( t );
 			m.execute();
-			mostraImagem( m.getImage() );
+			String tit = t.toString();
+			tit += " [" + ti.id +"]";
+			mostraImagem( tit , m.getImage() );
 		} catch (Exception ex) {
 			JOptionPane.showMessageDialog( this, "erro: " + ex );
 		}
@@ -76,6 +85,9 @@ public class JanelaPrincipal extends JFrame {
 	}
 
 	public void mostraImagem(BufferedImage imgOut) {
+		if( imgOut == null )
+			return;
+
 		mostraImagem("", imgOut);
 	}
 
@@ -99,7 +111,10 @@ public class JanelaPrincipal extends JFrame {
 	}
 
 	public void clickLoad() throws Exception {
-		mostraImagem( ImageFile.getInstance().carregaImagem());
+		ImageFile imF = ImageFile.getInstance();
+		File f = imF.getOpenFile();
+		BufferedImage bi = ImageIO.read( f );
+		mostraImagem( f.getName(), bi );
 	}
 
 	public JanelaPrincipal() {
@@ -191,7 +206,7 @@ public class JanelaPrincipal extends JFrame {
 		JMenuItem mntmEroso = new JMenuItem("Erosão");
 		mntmEroso.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				clickTask( TAREFA.EROSAO );
+				clickTask( TAREFA.E_LEX );
 			}
 		});
 		mnProcessamento.add(mntmEroso);
@@ -199,7 +214,7 @@ public class JanelaPrincipal extends JFrame {
 		JMenuItem mntmDilatao = new JMenuItem("Dilatação");
 		mntmDilatao.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				clickTask( TAREFA.DILATACAO );
+				clickTask( TAREFA.D_LEX );
 			}
 		});
 		mnProcessamento.add(mntmDilatao);
@@ -207,10 +222,18 @@ public class JanelaPrincipal extends JFrame {
 		JMenuItem mntmErosaoGrafo = new JMenuItem("Erosao Grafo");
 		mntmErosaoGrafo.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				clickTask( TAREFA.EROSAO_GRAFO_MST );
+				clickTask( TAREFA.E_GRAPH );
 			}
 		});
 		mnProcessamento.add(mntmErosaoGrafo);
+		
+		JMenuItem mntmDilataoGrafo = new JMenuItem("Dilatação Grafo");
+		mntmDilataoGrafo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				clickTask( TAREFA.D_GRAPH );
+			}
+		});
+		mnProcessamento.add(mntmDilataoGrafo);
 		contentPane = new JDesktopPane();
 		contentPane.setDragMode(JDesktopPane.LIVE_DRAG_MODE);
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));

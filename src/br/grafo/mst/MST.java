@@ -15,8 +15,6 @@ public class MST extends Grafo {
 	VerticePool pool = null;
 	ArrayList<Aresta> Q = new ArrayList<Aresta>(); // a lista q conterah as respostas
 
-	int[] colorReference = ImgUtil.pixPreto;
-	
 	public MST( Grafo g ) {
 		super( g.getArestas(), g.getVertices() );
 		pool = new VerticePool( g.getVertices().size() );
@@ -27,10 +25,6 @@ public class MST extends Grafo {
 		return "MST::\n" + super.toString();
 	}
 
-	public void setColorReference( int[] umaCor ) {
-		colorReference = umaCor;
-	}
-	
 	public void makeSet() {
 		subArvores.init( pool.getPool() );
 
@@ -76,14 +70,14 @@ public class MST extends Grafo {
 		}
 	}
 	
-	public int[] getMinRGB( int[][] elEstr, int oResult[] ) throws Exception {
+	public int[] getMinRGB__OLLLDDD( int[][] elEstr, int oResult[] ) throws Exception {
 		// no inicio jah foi feito a atualizacao dos ponteiros para o EE
 		do {
 			runKruskal();
 		} while( removeTrunks() > 2 );
 
-		float d1 = ImgUtil.getRGBDistance( (int[]) vertices.get(0).getData(), colorReference );
-		float d2 = ImgUtil.getRGBDistance( (int[]) vertices.get(1).getData(), colorReference );
+		float d1 = ImgUtil.getRGBDistance( (int[]) vertices.get(0).getData(), ImgUtil.pixPreto );
+		float d2 = ImgUtil.getRGBDistance( (int[]) vertices.get(1).getData(), ImgUtil.pixPreto );
 
 		int vi = 0;
 		// o delta mais próximo da cor de referência é o menor...
